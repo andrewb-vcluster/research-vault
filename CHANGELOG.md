@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Plan: add `docs/CODEX-CLAUDE-PARITY-PLAN.md` for shared Codex/Claude workflows, host adapters, reviewer provenance, installation, migration, and real-host acceptance requirements.
+
 ## [0.11.1] - 2026-11-12
 - Plan (`docs/specs/plan-2026-11-12-claims-gate-scope.md`): a faster claims gate. Split the `teach` row of `docs/REFERENCE.md` into one section per subcommand, each naming its evidence in a comment; `gate evidence --changed` lists only the citations inside the changed units; `teach serve --labs` refuses a script with no `#!` line before it starts; a `gates.exclude` list in the binding. A diff-scoped review is not built, by the user's decision after an adversarial review. No code in this commit.
 - `docs/REFERENCE.md`: the `teach` row of the Commands table is now one line that names the subcommands. Its text moved unchanged into a new `## teach` section with one `###` heading per form of the usage line; each of the 15 headings carries an `<!-- evidence: ... -->` comment naming the vault entries behind it. Five `COUPLINGS` rows in `scripts/deps.mjs` now say "the teach section".
