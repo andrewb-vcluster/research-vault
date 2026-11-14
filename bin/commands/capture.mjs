@@ -12,6 +12,7 @@ import { csvList } from '../lib/args.mjs';
 import { fetchSource } from '../lib/fetchsource.mjs';
 import { parseFrontmatter } from '../lib/frontmatter.mjs';
 import { loadBlocklist, matchBlock } from '../lib/blocklist.mjs';
+import { captureOperation } from '../lib/capture-operation.mjs';
 
 const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 
@@ -20,7 +21,7 @@ function loadSkeleton(repoRoot, type) {
   catch { return ''; }
 }
 
-function prepareEntry(vaultPath, opts, ctx = {}) {
+export function prepareEntry(vaultPath, opts, ctx = {}) {
   const repoRoot = opts.repoRoot || REPO_ROOT;
   const schema = loadSchema(repoRoot, { vaultPath });
   const now = opts.now || new Date().toISOString().slice(0, 10);
@@ -39,7 +40,7 @@ function prepareEntry(vaultPath, opts, ctx = {}) {
   const pending = ctx.pending || [];
   const hashInput = opts.contentBytes ?? (opts.content || null);
   const newHash = hashInput != null ? sha256(hashInput) : (opts.contentHash || null);
-  if (opts.type === 'source' && opts.url) {
+  if (!ctx.ignoreExisting && opts.type === 'source' && opts.url) {
     const normUrl = normalizeUrl(opts.url);
     const version = verKey(opts.subjectVersion);
     const existing = ctx.manifestEntries || buildManifest(vaultPath).entries;
@@ -59,7 +60,7 @@ function prepareEntry(vaultPath, opts, ctx = {}) {
   const path = join(vaultPath, folder, `${id}.md`);
   // Ids are vault-wide: a title that slugs to an id already used in another folder collides too.
   const taken = Object.values(TYPE_FOLDER).find(f => existsSync(join(vaultPath, f, `${id}.md`)));
-  if (taken || pending.some(p => p.id === id))
+  if (!ctx.ignoreExisting && (taken || pending.some(p => p.id === id)))
     return { dedup: { id, ambiguous: false, reason: `entry id ${id} already exists${taken ? ` in ${taken}/` : ''} (supersede via verify, do not overwrite)` } };
   const data = {
     title: opts.title, type: opts.type, created: now,
@@ -243,6 +244,19 @@ function captureDefaults(cwd) {
 }
 
 export async function run(args) {
+  if (Object.hasOwn(args, 'operation-id')) {
+    const invalid = !/^[A-Za-z0-9_-]{1,128}$/.test(args['operation-id'] || '') ||
+      !args.batch || !args.batch.endsWith('.json') || args.continue || args['store-body'] ||
+      (existsSync(args.batch) && statSync(args.batch).isDirectory());
+    if (invalid) {
+      process.stdout.write(JSON.stringify({ created: [], skipped: [], errors: [{ code: 'INPUT_INVALID', index: -1, retryable: false, error: 'operation-id requires a JSON-array --batch plan; ingest, --store-body and --continue are not supported' }], recoveryStateCreated: false }) + '\n');
+      return 2;
+    }
+    const selected = resolveVault({ flag: args.vault ?? null, cwd: args.cwd ?? process.cwd() });
+    const result = captureOperation(selected.path, args.batch, args['operation-id'], { ackDataEgress: !!args['ack-data-egress'] });
+    process.stdout.write(JSON.stringify(result, null, 2) + '\n');
+    return result.errors.length || result.operation?.phase !== 'complete' ? 1 : 0;
+  }
   const cwd = args.cwd ?? process.cwd();
   const resolved = resolveVault({ flag: args.vault ?? null, cwd });
   const vaultPath = resolved.path;

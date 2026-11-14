@@ -2,13 +2,14 @@
 import { parseArgs } from './lib/args.mjs';
 
 const USAGE = `research-vault <command> [options]
-commands: init|lint|capture|verify|search|related|manifest|compile|advise|obsidian|refresh|export|check|gate|teach|embed`;
+commands: init|lint|capture|verify|search|related|manifest|compile|advise|obsidian|refresh|export|check|gate|teach|embed|host`;
 
 const args = parseArgs(process.argv.slice(2));
 const cmd = args._[0];
 if (!cmd || cmd === '--help' || cmd === '-h') { process.stdout.write(USAGE + '\n'); process.exit(0); }
 
 const commands = {
+  host: () => import('./commands/host.mjs'),
   init: () => import('./commands/init.mjs'),
   lint: () => import('./commands/lint.mjs'),
   capture: () => import('./commands/capture.mjs'),

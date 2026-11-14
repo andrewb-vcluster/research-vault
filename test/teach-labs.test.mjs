@@ -470,9 +470,10 @@ test('one file imports child_process and one function spawns, with no shell and 
   const serve = ['bin/lib/labs.mjs', 'bin/lib/teach.mjs', 'bin/lib/lesson.mjs', 'bin/commands/teach.mjs', 'bin/lib/args.mjs', 'skills/research-teach/assets/quiz.js'];
   const RUNS = /child_process|\bspawn\b|(?<![.\w])(exec|execFile|execSync|execFileSync|eval)\s*\(|new Function/;
   for (const f of serve.slice(1)) assert.ok(!RUNS.test(readFileSync(join(ROOT, f), 'utf8')), f);
-  // gate.mjs, which teach.mjs imports for hasVerdict, runs git through execFileSync with an argument array; nothing else under bin/.
+  // gate.mjs is in the serve path. The Codex installer/reviewer are separate entry points, never serve dependencies.
   const walk = (d) => readdirSync(join(ROOT, d), { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(join(d, e.name)) : e.name.endsWith('.mjs') ? [join(d, e.name)] : []));
-  assert.deepEqual(walk('bin').filter((f) => readFileSync(join(ROOT, f), 'utf8').includes('child_process')).sort(), ['bin/lib/gate.mjs', 'bin/lib/labs.mjs']);
+  assert.deepEqual(walk('bin').filter((f) => readFileSync(join(ROOT, f), 'utf8').includes('child_process')).sort(), ['bin/lib/codex-review.mjs', 'bin/lib/gate.mjs', 'bin/lib/host-install.mjs', 'bin/lib/labs.mjs']);
+  for (const file of serve) assert.doesNotMatch(readFileSync(join(ROOT, file), 'utf8'), /from ['"][^'"]*(?:codex-review|host-install)\.mjs['"]/);
   assert.match(readFileSync(join(ROOT, 'bin/lib/gate.mjs'), 'utf8'), /import \{ execFileSync \} from 'node:child_process';/);
   const src = readFileSync(join(ROOT, 'bin/lib/labs.mjs'), 'utf8');
   assert.deepEqual(src.match(/^import .*child_process.*$/gm), ["import { spawn } from 'node:child_process';"]);

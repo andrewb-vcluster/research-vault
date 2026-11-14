@@ -127,3 +127,8 @@ Optional, for a vault whose repo binding sets `"embedding": { "url": "...", "mod
 - **Deterministic and offline.** Output is stable, id-sorted JSONL for an external pipeline. Nothing is sent over the network and the vault is never modified.
 
 See [`docs/FINETUNING.md`](docs/FINETUNING.md) for the export format and intended pipeline.
+
+## Codex integration
+<!-- evidence: 2026-11-13-codex-adapter-implementation 2026-11-13-codex-adapter-validation -->
+
+The project installer refuses existing unowned destinations, symlinked destination ancestors and changed owned files. Its pinned launcher verifies copied package content before running the CLI. These are integrity and ownership checks, not protection against a malicious filesystem owner. The fresh Codex review runner requests a read-only sandbox and disables several integrations, but evidence-only reads remain instructions, not an enforced file/tool allowlist. It writes a report rather than a ledger PASS. See [Codex setup](docs/CODEX.md) for trust and review limitations.

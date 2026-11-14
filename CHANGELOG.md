@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Docs: distinguish instructed agent workflows from observed host acceptance, qualify Codex installation and hook guarantees, and clarify migration guidance after claims review.
+
+- Reliability: add opt-in immutable capture receipts, exclusive publication and recovery; explicit controller paths, validated source/claim handoffs, serialized intents and reconciled lifecycle completion. Preserve legacy capture and research routing/artifact policy; deterministic isolated-vault tests added, real-host acceptance remains open.
+
+- Spec: add a fresh-session research workflow reliability handoff, preserving current routing and artifact policy while specifying opt-in batch recovery, explicit execution context, handoff validation, and acceptance tests.
+
+- Codex: add a project-local installer with pinned CLI/assets, generated task skills and custom agents, ownership-checked upgrade/uninstall, an event adapter for the existing hook handlers, and a fresh read-only CLI review runner with explicit provenance limitations and no automatic ledger writes. Existing Claude scaffolding is preserved.
+
 - Plan: add `docs/CODEX-CLAUDE-PARITY-PLAN.md` for shared Codex/Claude workflows, host adapters, reviewer provenance, installation, migration, and real-host acceptance requirements.
 
 ## [0.11.1] - 2026-11-12

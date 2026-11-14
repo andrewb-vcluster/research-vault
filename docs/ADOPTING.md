@@ -1,6 +1,6 @@
 # Adopting research-vault in a code project
 
-The steps, in order, to make a repo cite its research from code, fail CI when a citation goes stale, and draw the result. Every command below is run from the repo root as `node <plugin>/bin/research-vault.mjs` followed by the command; in Claude Code the plugin is installed per the README and the same commands are slash commands.
+The steps, in order, to make a repo cite its research from code, fail CI when a citation goes stale, and draw the result. Every command below is run from the repo root as `node <plugin>/bin/research-vault.mjs` followed by the command; in Claude Code the plugin is installed per the README and explicit wrappers live under `commands/`; use their documented names and arguments.
 
 ## 1. Put a vault inside the repo
 
@@ -9,7 +9,7 @@ research-vault init --vault research
 research-vault init --project --vault research --code-links 'src/**/*.ts,src/**/*.js'
 ```
 
-The first command scaffolds `research/` (entries, `taxonomy.json`, a generated `AGENTS.md`, a `.gitignore` for the derived caches). The second writes `.research-vault.json` at the repo root, binding the repo to that vault and naming which files are code. Commit both. Code links need the vault inside the repo; a shared vault elsewhere can still be cited from prose, not from code.
+The first command scaffolds `research/` (entry folders, `taxonomy.json`, a generated `AGENTS.md`, a `.gitignore` for the derived caches). The second writes `.research-vault.json` at the repo root, binding the repo to that vault and naming which files are code. Commit both. Code links need the vault inside the repo; a shared vault elsewhere can still be cited from prose, not from code.
 
 The plugin ships comment and declaration patterns for Lua, the JavaScript and TypeScript family, Python, Go, Rust, Zig, Ruby, shell and C/C++. Another language, or a stricter rule, is two regexes under `code.languages` in that file; see the Reference, "Code links".
 
@@ -23,7 +23,7 @@ Add a `versions` key for each dependency your code is checked against. The patte
 }
 ```
 
-A `go.mod` require line, a `build.zig.zon` minimum version, or an addon `.toc` `## Interface:` line all work the same way. Skip this step if nothing in the code depends on a versioned API.
+For other version-file formats, supply a pattern that captures the declared version; the lockfile pattern above is an example configuration. Skip this step if nothing in the code depends on a versioned API.
 
 ## 3. Capture the research, then cite it above the code
 
@@ -44,7 +44,7 @@ research-vault check --check    # exits 1 on stale, uncovered or unattached
 research-vault check --json     # the rows, for tools
 ```
 
-`uncovered` means the id names no entry; `stale` means the pinned version no longer matches the file in step 2, or the entry's freshness window lapsed; `unattached` means the comment reached no declaration.
+`uncovered` means the id names no entry; `unattached` means the comment reached no declaration. `stale` can indicate a superseded entry, missing version-configuration key, pinned-version mismatch, or failed freshness check. Pinned links use the version rule instead of the time rule, except volatile entries remain stale; unpinned links use freshness checks.
 
 ## 5. Fail CI on it
 
@@ -61,11 +61,11 @@ research-vault:
     - run: node /tmp/research-vault/bin/research-vault.mjs check --check
 ```
 
-The first `lint` builds the manifest the `--check` run compares against.
+The implementation defines a manifest write in the non-check `lint` path and a comparison in the `--check` path.
 
 ## 6. Gate the claims, when you want review
 
-A linked symbol can be gated like a document: `gate evidence <file> --changed` lists the changed symbols and their evidence, a fresh `claims-reviewer` agent judges whether the code follows the entries it cites, and `gate record <file> PASS|MERIT "<note>"` stores the verdict keyed to that symbol's text. A later edit to the function reopens only that symbol. The `research-claims-gate` skill runs the whole loop in Claude Code.
+A linked symbol can be gated like a document: `gate evidence <file> --changed` lists the changed symbols and their evidence, a fresh `claims-reviewer` agent judges whether the code follows the entries it cites, and `gate record <file> PASS|MERIT "<note>"` stores the verdict keyed to that symbol's text. A later edit to the function reopens only that symbol. The `research-claims-gate` skill specifies this loop for Claude Code.
 
 ## 7. Look at it
 
@@ -73,7 +73,7 @@ A linked symbol can be gated like a document: `gate evidence <file> --changed` l
 research-vault obsidian --vault research
 ```
 
-writes `research/_obsidian/`, a derived, git-ignored view: one note per entry, one per linked code file, wikilinks for every edge, and a seeded graph configuration (MOC hidden, colours by type, stale in red). Open that folder, not `research/`, as an Obsidian vault and press Ctrl+G.
+writes `research/_obsidian/`, a derived, git-ignored view: one note per entry, one per linked code file, wikilinks for every edge, and a seeded graph configuration. Open that folder, not `research/`, as an Obsidian vault and use its graph view.
 
 ## 8. Feed your own graph
 
@@ -91,4 +91,9 @@ node /path/to/research-vault/bin/research-vault.mjs check --json > check.json
 node /path/to/research-vault/examples/blast-radius.mjs research/.vault-manifest.json <id> check.json ../other-repo/check.json
 ```
 
-Rebuild the research outputs whenever the code graph is rebuilt; neither is committed, so they are exactly as fresh as the last run.
+Rebuild the research outputs whenever the code graph is rebuilt. Keep generated outputs uncommitted and regenerate them after relevant changes.
+
+## Codex entry points
+<!-- evidence: 2026-11-13-codex-adapter-implementation 2026-11-13-codex-adapter-validation -->
+
+Codex users can install project-local task skills and use a pinned CLI launcher from their bound repository. Follow [Codex setup](CODEX.md) for installation, review dispatch and explicit checks when hooks are unavailable. The existing vault and binding remain shared with Claude.

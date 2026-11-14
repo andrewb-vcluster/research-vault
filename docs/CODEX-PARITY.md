@@ -1,6 +1,6 @@
 # Codex parity matrix
 
-This page maps each part of the research-vault Claude Code plugin to Codex, as issue 67 asks (2026-11-11-research-vault-issue-67-codex-full). It has one row per skill (9), command (7), agent (2) and hook (4), each with its Codex equivalent or, where there is none, the fallback and what the fallback loses. It ends with the decisions the rest of issue 67 needs.
+This page maps each part of the research-vault Claude Code plugin to Codex, as the captured issue-67 text requests (2026-11-11-research-vault-issue-67-codex-full). It has one row per skill (9), command (7), agent (2) and hook (4), each with its Codex equivalent or, where there is none, the fallback and what the fallback loses. It ends with the decisions the rest of issue 67 needs.
 
 ## Evidence and its limits
 
@@ -41,17 +41,17 @@ Each of the nine has `name` and `description` in its frontmatter (2026-11-11-rep
 
 ## Commands
 
-The Codex counterpart of a command file is a custom prompt, which is deprecated, explicit-only and kept in the user's Codex home rather than the repository (2026-11-11-codex-docs-custom-prompts-deprecated). Whether a plugin's `commands/` folder loads in Codex is open question 2026-11-11-does-codex-load-claude-code-plugin. The fallback in every row is a skill that does the command's job, invoked with `$<name>` or `/skills` (2026-11-11-codex-docs-build-skills); what it loses is the `/research-...` slash name and the `argument-hint` line.
+The Codex counterpart of a command file is a custom prompt, which is deprecated, explicit-only and kept in the user's Codex home rather than the repository (2026-11-11-codex-docs-custom-prompts-deprecated). Whether a plugin's `commands/` folder loads in Codex is open question 2026-11-11-does-codex-load-claude-code-plugin. The fallback in every row is a skill that does the command's job, invoked with `$<name>` or `/skills` (2026-11-11-codex-docs-build-skills); the slash-name mapping changes, and support for `argument-hint` is not established.
 
 | Command | Claude Code | Codex equivalent | Fallback and what it loses |
 |---|---|---|---|
-| research | Invokes the `research-orchestrate` skill with the user's question; `argument-hint: [question]` (2026-11-11-repo-lines-behind-codex-parity-matrix) | From a plugin, not established (see above); a user-level custom prompt (2026-11-11-codex-docs-custom-prompts-deprecated) | Invoke `$research-orchestrate` directly; no extra skill needed. Loses the slash name and hint. |
-| research-compile | Runs `node "${CLAUDE_PLUGIN_ROOT}/bin/research-vault.mjs" compile` (2026-11-11-repo-lines-behind-codex-parity-matrix) | As for `research` | A skill or a direct CLI run. Loses the slash name and hint. |
+| research | Invokes the `research-orchestrate` skill with the user's question; `argument-hint: [question]` (2026-11-11-repo-lines-behind-codex-parity-matrix) | From a plugin, not established (see above); a user-level custom prompt (2026-11-11-codex-docs-custom-prompts-deprecated) | Invoke `$research-orchestrate` directly; no extra skill needed. Slash-name mapping changes; argument-hint support is not established. |
+| research-compile | Runs `node "${CLAUDE_PLUGIN_ROOT}/bin/research-vault.mjs" compile` (2026-11-11-repo-lines-behind-codex-parity-matrix) | As for `research` | A skill or a direct CLI run. Slash-name mapping changes; argument-hint support is not established. |
 | research-init | Runs `init`; `disable-model-invocation: true` (2026-11-11-repo-lines-behind-codex-parity-matrix) | As for `research`; a skill whose `agents/openai.yaml` sets `policy.allow_implicit_invocation: false` is not invoked implicitly, while explicit `$skill` invocation still works (2026-11-11-codex-docs-build-skills) | A skill with that policy. Loses the slash name. |
 | research-lint | Runs `lint --json` and summarizes (2026-11-11-repo-lines-behind-codex-parity-matrix) | As for `research` | A skill or a direct CLI run. Loses the slash name. |
-| research-obsidian | Runs `obsidian`; `argument-hint: [--out _obsidian]` (2026-11-11-repo-lines-behind-codex-parity-matrix) | As for `research` | A skill or a direct CLI run. Loses the slash name and hint. |
-| research-related | Runs `related <id>`; has an `argument-hint` (2026-11-11-repo-lines-behind-codex-parity-matrix) | As for `research` | A skill or a direct CLI run. Loses the slash name and hint. |
-| research-search | Runs `search` with the user's filters; has an `argument-hint` (2026-11-11-repo-lines-behind-codex-parity-matrix) | As for `research` | A skill or a direct CLI run. Loses the slash name and hint. |
+| research-obsidian | Runs `obsidian`; `argument-hint: [--out _obsidian]` (2026-11-11-repo-lines-behind-codex-parity-matrix) | As for `research` | A skill or a direct CLI run. Slash-name mapping changes; argument-hint support is not established. |
+| research-related | Runs `related <id>`; has an `argument-hint` (2026-11-11-repo-lines-behind-codex-parity-matrix) | As for `research` | A skill or a direct CLI run. Slash-name mapping changes; argument-hint support is not established. |
+| research-search | Runs `search` with the user's filters; has an `argument-hint` (2026-11-11-repo-lines-behind-codex-parity-matrix) | As for `research` | A skill or a direct CLI run. Slash-name mapping changes; argument-hint support is not established. |
 
 ## Agents
 
@@ -116,3 +116,8 @@ Judgment: stub the dispatch in the required job. A pull request then runs the Co
 ### 8. Which Codex version the install steps require
 
 The latest release on 2026-11-11 was 0.167.1 (2026-11-11-codex-latest-release-rust-v0-167), and some documented behaviour is versioned: from 0.134.0 `--profile` no longer reads `[profiles.<name>]` from `config.toml` (2026-11-11-codex-docs-advanced-config), and `gpt-6.1-terra` needs 0.159.0 or later (2026-11-11-codex-docs-models). The one local install found sits in a cask directory named 0.124.0, and its binary is missing (2026-11-11-codex-cli-local-probe-parity-matrix). Judgment: the install steps name a minimum version, and the open questions above are answered on a working binary of that version before the briefs that depend on them are written. As of 2026-11-11 the maintainer has no Codex access (2026-11-11-user-instruction-2026-11-11-no), so those answers have to come from someone who has it or from documentation captured later.
+
+## Additive implementation
+<!-- evidence: 2026-11-13-codex-adapter-implementation 2026-11-13-codex-adapter-validation -->
+
+The matrix above records the earlier research and open questions. The project now includes an additive Codex installer, event adapter and fresh CLI review runner; [Codex setup](CODEX.md) describes that route and its limits. Stronger enforced isolation and strict ledger provenance remain separate hardening work. The Codex installer does not rewrite source Claude scaffold definitions; shared workflow instructions can evolve independently.

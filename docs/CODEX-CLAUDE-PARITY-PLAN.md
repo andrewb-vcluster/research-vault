@@ -4,6 +4,11 @@ Make research-vault usable from both Claude Code and Codex without maintaining t
 
 This is an implementation proposal. The phases and acceptance criteria below are requirements, not claims that the proposed integration already works. Initial release scope is the local Claude Code CLI and Codex CLI on macOS and Linux. Desktop and hosted sessions require their own compatibility runs before being advertised as supported.
 
+## Execution scope
+<!-- evidence: 2026-11-13-codex-adapter-implementation 2026-11-13-codex-adapter-validation -->
+
+The additive Codex installer preserves the existing Claude scaffolding. Live Claude acceptance is required only for changes to that scaffolding; Codex-only additions use live Codex acceptance and the shared regression suite. Keep the stronger enforced-isolation and claims-v2 design below as a separate hardening milestone rather than claiming native Codex review has those guarantees. The initial integration uses fresh Codex CLI reviews with explicit limitations and the existing manual ledger workflow. The implementation guide is `docs/CODEX.md`; it distinguishes implemented features from this broader roadmap.
+
 ## Current contracts and design constraints
 <!-- evidence: 2026-11-13-parity-plan-repository-contracts 2026-11-13-parity-implementation-boundaries-acceptance -->
 

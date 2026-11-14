@@ -317,3 +317,17 @@ npm test     # node --test; no test-framework dependencies
 ```
 
 CI runs the suite plus `init`, `lint --check`, the AGENTS.md drift check, an encoding check and `npm run lint:self` on Linux and macOS with Node 22 and 24.
+
+## host
+<!-- evidence: 2026-11-13-codex-adapter-implementation 2026-11-13-codex-adapter-validation -->
+
+`host install codex --at <project> [--dry-run] [--without-hooks] [--model <name>] [--effort <level>]` installs project-local Codex tasks, agents and optional hooks. `host status codex --at <project>` lists changed owned files; `host uninstall codex --at <project>` removes unchanged owned files. `host paths` prints package, CLI, asset and resolved vault paths. `host review codex --draft <file> --out <new-report> [--role claims-reviewer|lesson-reader] [--extra <ids>] [--model <name>] [--effort <level>]` runs a fresh read-only Codex review and leaves the claims ledger unchanged. See [Codex setup](CODEX.md) for trust, limitations and migration.
+
+## Resumable capture (opt-in)
+<!-- evidence: 2026-11-13-reliability-code-v2 2026-11-13-reliability-tests-v2 -->
+
+Use `capture --batch <absolute-plan.json> --operation-id <key> --vault <absolute-vault>` for an immutable JSON-array batch. Retain the original plan, referenced files and key; resolve relative `contentFile` paths against the plan directory. Keys contain 1–128 ASCII letters, digits, underscores or hyphens. This mode rejects ingest inputs and `--continue`; source-body consent still requires `--ack-data-egress` when a spec requests `storeBody`.
+
+Receipts live in `.capture-operations/<key>.json`. The output is one JSON object with `created`, `skipped`, `errors`, `recoveryStateCreated`, and operation metadata when available. Exit 0 means complete persistence (or historical replay), 1 means a validation/conflict/storage/finalization failure, and 2 means an invalid CLI combination. Persistence does not certify research verification or a claims verdict.
+
+Replay incomplete operations with the identical plan, inputs, semantic options and key. The writer freezes the date and prepared fingerprints; changed inputs/schema fail. Completed receipts return `replay=true, historical=true` without checking current artifacts: validate current artifacts separately before claiming current completion. See [recovery details](RELIABILITY.md). Legacy capture remains available to external orchestrators; adopting operation keys is optional.

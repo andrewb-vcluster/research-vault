@@ -26,6 +26,26 @@ const UNSCANNED = new Set(['CHANGELOG.md', 'scripts/deps.mjs', 'test/deps.test.m
 // text itself, and the test fails when either file stops containing it. Give one only when the
 // literal really is in both files; a row about two values being equal stays prose.
 export const COUPLINGS = [
+  ['bin/lib/capture-operation.mjs', 'bin/commands/capture.mjs', 'opt-in key syntax and structured validation error protocol', 'INPUT_INVALID'],
+  ['bin/lib/capture-operation.mjs', 'bin/lib/research-controller.mjs', 'receipt phases, operation identity and retryable error codes', 'complete'],
+  ['bin/lib/capture-operation.mjs', 'docs/RELIABILITY.md', 'receipt v1, replay and lock recovery protocol', 'historical'],
+  ['bin/commands/capture.mjs', 'docs/REFERENCE.md', 'opt-in operation-id and receipt output contract', 'operation-id'],
+  ['bin/lib/research-controller.mjs', 'skills/research-orchestrate/SKILL.md', 'shared reference controller callbacks, intent and recovery protocol', 'persistBatch'],
+  ['bin/lib/research-controller.mjs', 'docs/RELIABILITY.md', 'task recovery and scoped mutation reconciliation', 'research-orchestrate'],
+
+  ['bin/lib/codex-review.mjs', 'agents/claims-reviewer.md', 'the shared policy and PASS/FAIL-as-sent review protocol'],
+  ['bin/lib/codex-review.mjs', 'agents/lesson-reader.md', 'the shared reader policy and READS/REVISE protocol'],
+  ['bin/lib/codex-review.mjs', 'bin/lib/host-install.mjs', 'the generated review command and default model/effort'],
+  ['bin/commands/host.mjs', 'docs/CODEX.md', 'the installation and review CLI contract'],
+  ['bin/commands/host.mjs', 'docs/REFERENCE.md', 'the host command reference'],
+  ['bin/lib/host-install.mjs', 'hooks/codex.mjs', 'the generated Codex hook event names and adapter command'],
+  ['bin/lib/host-install.mjs', 'agents/claims-reviewer.md', 'the shared reviewer body and generated Codex dispatch identity'],
+  ['bin/lib/host-install.mjs', 'agents/lesson-reader.md', 'the shared reader body and generated Codex dispatch identity'],
+  ['bin/lib/host-install.mjs', 'skills/research-claims-gate/SKILL.md', 'the exact Claude dispatch and plugin-root forms translated for Codex'],
+  ['bin/lib/host-install.mjs', 'skills/research-teach/SKILL.md', 'the exact reader dispatch and plugin-root forms translated for Codex'],
+  ['bin/lib/host-install.mjs', 'skills/research-orchestrate/SKILL.md', 'the plugin-root form translated for Codex'],
+  ['hooks/codex.mjs', 'hooks/hooks.json', 'the four lifecycle event names and shared handler selection'],
+  ['hooks/codex.mjs', 'scripts/deps.mjs', 'Dependencies maps to the development PostToolUse --hook protocol'],
   ['bin/research-vault', 'bin/research-vault.mjs', 'the shim execs ./research-vault.mjs by name'],
   ['bin/research-vault.mjs', 'docs/REFERENCE.md', 'the command table restates the commands map'],
   ['bin/research-vault.mjs', 'test/smoke.test.mjs', 'the --help usage line is asserted in order', '--help'],
